@@ -1,24 +1,8 @@
 # pulldown-list
 
-## Project setup
-```
-yarn install
-```
+基于 betterScroll 封装的列表刷新及加载更多
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- vue2: `vue2.x`实现
+- vue3: `vue3.x`实现
+- react: `react`实现
+- svelte: `svelte`实现
