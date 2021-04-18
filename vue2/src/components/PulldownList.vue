@@ -1,7 +1,7 @@
 <template>
   <div class="pulldown-list" ref="pulldown">
     <div class="pulldown-list__content">
-      <div class="refresh" v-if="isRefresh">
+      <div class="refresh" v-if="!pulldownDisabled">
         <div class="refresh__tips" :style="tipsColor">
           <load-icon
             class="refresh__icon"
@@ -16,7 +16,7 @@
       <div class="pulldonw-list__container">
         <slot />
       </div>
-      <div class="load" v-if="isLoad">
+      <div class="load" v-if="!pullupDisabled">
         <div class="load__tips" :style="tipsColor">
           <load-icon
             class="load__icon"
@@ -123,6 +123,9 @@ export default {
     };
   },
   computed: {
+    pulldownDisabled() {
+      return this.pullupStatus === "loading" || !this.isRefresh;
+    },
     pulldownTip() {
       const tips = {
         none: this.refreshText,
@@ -133,6 +136,9 @@ export default {
       };
 
       return tips[this.pulldownStatus];
+    },
+    pullupDisabled() {
+      return this.pulldownStatus === "refreshing" || !this.isLoad;
     },
     pullupTip() {
       const tips = {
@@ -206,12 +212,20 @@ export default {
   },
   methods: {
     onRefreshing() {
-      this.pulldownStatus = "refreshing";
-      this.$emit("refresh");
+      if (this.pulldownDisabled) {
+        this.bs.finishPullUp();
+      } else {
+        this.pulldownStatus = "refreshing";
+        this.$emit("refresh");
+      }
     },
     onLoading() {
-      this.pullupStatus = "loading";
-      this.$emit("load");
+      if (this.pullupDisabled) {
+        this.bs.finishPullDown();
+      } else {
+        this.pullupStatus = "loading";
+        this.$emit("load");
+      }
     },
     onScroll({ y }) {
       y > this.refreshOffset
