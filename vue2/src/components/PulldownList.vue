@@ -5,7 +5,7 @@
         <div class="refresh__tips" :style="tipsColor">
           <load-icon
             class="refresh__icon"
-            :color="color"
+            :color="iconColor"
             v-show="pulldownStatus === 'refreshing'"
           />
           <div class="refresh__text" v-show="pulldownTip">
@@ -20,7 +20,7 @@
         <div class="load__tips" :style="tipsColor">
           <load-icon
             class="load__icon"
-            :color="color"
+            :color="iconColor"
             v-show="pullupStatus === 'loading'"
           />
           <div class="load__text" v-show="pullupTip">
@@ -110,7 +110,11 @@ export default {
       type: String,
       default: "已经到底了",
     },
-    color: {
+    textColor: {
+      type: String,
+      default: "#2f54eb",
+    },
+    iconColor: {
       type: String,
       default: "#2f54eb",
     },
@@ -152,7 +156,7 @@ export default {
       return tips[this.pullupStatus];
     },
     tipsColor() {
-      return { color: this.color };
+      return { color: this.textColor };
     },
   },
   watch: {
