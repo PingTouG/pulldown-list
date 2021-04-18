@@ -14,7 +14,13 @@
         </div>
       </div>
       <div class="pulldonw-list__container">
-        <slot />
+        <div class="empty" v-if="emptyVisible">
+          <template v-if="$slots.empty">
+            <slot name="empty" />
+          </template>
+          <empty-icon v-else />
+        </div>
+        <slot v-else />
       </div>
       <div class="load" v-if="!pullupDisabled">
         <div class="load__tips" :style="tipsColor">
@@ -37,10 +43,11 @@ import BScroll from "@better-scroll/core";
 import Pulldown from "@better-scroll/pull-down";
 import Pullup from "@better-scroll/pull-up";
 import LoadIcon from "./LoadIcon";
+import EmptyIcon from "./EmptyIcon";
 
 export default {
   name: "PulldownList",
-  components: { LoadIcon },
+  components: { LoadIcon, EmptyIcon },
   props: {
     isRefresh: {
       type: Boolean,
@@ -118,11 +125,20 @@ export default {
       type: String,
       default: "#2f54eb",
     },
+    isEmpty: {
+      type: Boolean,
+      default: false,
+    },
+    isFirstLoad: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       pulldownStatus: "none",
       pullupStatus: "none",
+      firstLoaded: false,
       bs: null,
     };
   },
@@ -142,7 +158,9 @@ export default {
       return tips[this.pulldownStatus];
     },
     pullupDisabled() {
-      return this.pulldownStatus === "refreshing" || !this.isLoad;
+      return (
+        this.pulldownStatus === "refreshing" || !this.isLoad || this.isEmpty
+      );
     },
     pullupTip() {
       const tips = {
@@ -158,23 +176,42 @@ export default {
     tipsColor() {
       return { color: this.textColor };
     },
+    emptyVisible() {
+      return (
+        (!this.isFirstLoad || (this.isFirstLoad && this.firstLoaded)) &&
+        this.isEmpty
+      );
+    },
   },
   watch: {
     refreshStatus(val) {
       this.pulldownStatus = val;
+      // 成功加载数据之后需要重新计算BetterScroll以确保滚动效果正常
       val === "success" && this.bs.refresh();
-      this.loadStatus === "finished" && this.bs.finishPullUp();
+      // 如果刷新时已经加载全部的数据，则需要在触发刷新时将加载状态重置
+      if (this.loadStatus === "finished") {
+        this.pullupStatus = "none";
+        this.bs.finishPullUp();
+      }
+      // 若设置首次加载数据，则需要在成功之后将firstLoaded设置为true
+      ["success", "error", "finished"].includes(val) &&
+        this.isFirstLoad &&
+        !this.firstLoaded &&
+        (this.firstLoaded = true);
 
       if (["success", "error"].includes(val)) {
+        // 每次触发刷新事件后需要手动调用finishPullDown来告诉BetterScroll准备下次刷新事件
         setTimeout(() => this.bs.finishPullDown(), 800);
         setTimeout(() => (this.pulldownStatus = "none"), 1000);
       }
     },
     loadStatus(val) {
       this.pullupStatus = val;
+      // 成功加载数据之后需要重新计算BetterScroll以确保滚动效果正常
       ["success", "finished"].includes(val) && this.bs.refresh();
 
       if (["success", "error"].includes(val)) {
+        // 每次触发加载事件后需要手动调用finishPullUp来告诉BetterScroll准备下次加载事件
         this.bs.finishPullUp();
         setTimeout(() => (this.pullupStatus = "none"), 100);
       }
@@ -185,6 +222,7 @@ export default {
     this.pullupStatus = this.loadStatus;
   },
   mounted() {
+    // 下拉刷新设置
     let pullDownRefresh = false;
     if (this.isRefresh) {
       BScroll.use(Pulldown);
@@ -194,6 +232,7 @@ export default {
       };
     }
 
+    // 上拉加载更多设置
     let pullUpLoad = false;
     if (this.isLoad) {
       BScroll.use(Pullup);
@@ -213,6 +252,9 @@ export default {
     this.isRefresh && this.bs.on("pullingDown", this.onRefreshing);
     this.isLoad && this.bs.on("pullingUp", this.onLoading);
     this.$emit("ready", this.bs);
+
+    // 进行首次加载数据，自动触发刷新
+    this.isFirstLoad && this.bs.autoPullDownRefresh();
   },
   methods: {
     onRefreshing() {
@@ -231,10 +273,13 @@ export default {
         this.$emit("load");
       }
     },
-    onScroll({ y }) {
+    onScroll(pos) {
+      const { y } = pos;
       y > this.refreshOffset
         ? this.pulldownStatus === "none" && (this.pulldownStatus = "wait")
         : this.pulldownStatus === "wait" && (this.pulldownStatus = "none");
+
+      this.$emit("scroll", pos);
     },
   },
 };

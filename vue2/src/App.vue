@@ -2,6 +2,8 @@
   <div id="app">
     <pulldown-list
       class="list"
+      :is-empty="list === 0"
+      is-first-load
       :load-status="loadStatus"
       :refresh-status="refreshStatus"
       @refresh="onRefresh"
@@ -22,7 +24,7 @@ export default {
     return {
       refreshStatus: "none",
       loadStatus: "none",
-      list: 20,
+      list: 0,
       page: 1,
     };
   },
@@ -31,7 +33,8 @@ export default {
   },
   methods: {
     async getList() {
-      await new Promise((resolve) => setTimeout(resolve, 6000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // this.list = 0;
       this.list = this.page === 1 ? 20 : this.list + 20;
     },
     async onRefresh() {
