@@ -1,6 +1,6 @@
 <template>
   <div class="pulldown-list" ref="pulldown">
-    <div class="pulldown-list__content">
+    <div class="pulldown-list__container">
       <div class="refresh" v-if="!pulldownDisabled">
         <div class="refresh__tips" :style="tipsColor">
           <load-icon
@@ -13,7 +13,7 @@
           </div>
         </div>
       </div>
-      <div class="pulldonw-list__container">
+      <div class="pulldonw-list__content">
         <div class="empty" v-if="emptyVisible">
           <template v-if="$slots.empty">
             <slot name="empty" />
