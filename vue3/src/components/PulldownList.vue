@@ -1,6 +1,6 @@
 <template>
   <div class="pulldown-list" ref="pulldown">
-    <div class="pulldown-list__content">
+    <div class="pulldown-list__container">
       <div class="refresh" v-if="!pulldownDisabled">
         <div class="refresh__tips" :style="tipsColor">
           <load-icon
@@ -13,7 +13,7 @@
           </div>
         </div>
       </div>
-      <div class="pulldonw-list__container">
+      <div class="pulldonw-list__content">
         <div class="empty" v-if="emptyVisible">
           <template v-if="$slots.empty">
             <slot name="empty" />
@@ -59,7 +59,7 @@ const props = defineProps({
     refreshStatus: {
       type: String,
       default: "none",
-      validator: (val) =>
+      validator: (val:string) =>
         ["none", "refreshing", "success", "error"].includes(val),
     },
     refreshText: {
@@ -93,7 +93,7 @@ const props = defineProps({
     loadStatus: {
       type: String,
       default: "none",
-      validator: (val) =>
+      validator: (val:string) =>
         ["none", "loading", "success", "error", "finished"].includes(val),
     },
     loadText: {
@@ -179,21 +179,6 @@ watch(
       setTimeout(() => (pulldownStatus.value = "none"), 1000);
     }
 })
-
-watch(
-  () => props.loadStatus,
-  (val) => {
-    pullupStatus.value = val;
-    // 成功加载数据之后需要重新计算BetterScroll以确保滚动效果正常
-    ["success", "finished"].includes(val) && bs.value.refresh();
-
-    if (["success", "error"].includes(val)) {
-      // 每次触发加载事件后需要手动调用finishPullUp来告诉BetterScroll准备下次加载事件
-      bs.value.finishPullUp();
-      setTimeout(() => (pullupStatus.value = "none"), 100);
-    }
-  }
-)
 const onRefreshing = () => {
   if (pulldownDisabled.value) {
     bs.value.finishPullUp();
@@ -212,7 +197,6 @@ if (props.isLoad) {
   };
 }
 const pullupStatus = ref(props.loadStatus)
-const firstLoaded = ref(false)
 const pullupDisabled = computed(() => pulldownStatus.value === "refreshing" || !props.isLoad || props.isEmpty)
 const pullupTip = computed(() => {
 const tips: { [prop:string]:string } = {
@@ -224,9 +208,20 @@ const tips: { [prop:string]:string } = {
   }
   return tips[pullupStatus.value];
 })
-const tipsColor = computed(() => ({ color: props.textColor }))
-const emptyVisible = computed(() => (!props.isFirstLoad || (props.isFirstLoad && firstLoaded.value)) && props.isEmpty)
-  
+watch(
+  () => props.loadStatus,
+  (val) => {
+    pullupStatus.value = val;
+    // 成功加载数据之后需要重新计算BetterScroll以确保滚动效果正常
+    ["success", "finished"].includes(val) && bs.value.refresh();
+
+    if (["success", "error"].includes(val)) {
+      // 每次触发加载事件后需要手动调用finishPullUp来告诉BetterScroll准备下次加载事件
+      bs.value.finishPullUp();
+      setTimeout(() => (pullupStatus.value = "none"), 100);
+    }
+  }
+)
 const onLoading = () =>{
   if (pullupDisabled.value) {
         bs.value.finishPullDown();
@@ -235,6 +230,10 @@ const onLoading = () =>{
     emit("load");
   }
 }
+
+const tipsColor = computed(() => ({ color: props.textColor }))
+const firstLoaded = ref(false)
+const emptyVisible = computed(() => (!props.isFirstLoad || (props.isFirstLoad && firstLoaded.value)) && props.isEmpty)
 
 const bs:any = ref(null)
 const pulldown:any = ref(null)
