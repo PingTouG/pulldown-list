@@ -224,7 +224,7 @@ watch(
 )
 const onLoading = () =>{
   if (pullupDisabled.value) {
-        bs.value.finishPullDown();
+    bs.value.finishPullDown();
   } else {
     pullupStatus.value = "loading";
     emit("load");
