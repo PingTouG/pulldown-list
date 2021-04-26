@@ -1,0 +1,26 @@
+.pulldown-list {
+  overflow: hidden;
+}
+.refresh__tips,
+.load__tips {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 12px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.refresh__tips__text,
+.load__tips__text {
+  margin-left: 12px;
+}
+.refresh__tips {
+  position: absolute;
+  transform: translateY(-100%) translateZ(0);
+}
+.empty__icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
