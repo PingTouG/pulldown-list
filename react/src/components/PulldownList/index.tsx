@@ -172,7 +172,7 @@ const PulldownList = (props:PulldownListProps) => {
         
     }
     // 主体元素
-    const PulldownContent = (
+    const PulldownContent = () => (
         <div className="pulldown-list__content">
             {emptyVisible ? <div className="empty">{EmptyIcon}</div> : props.children}
         </div>
@@ -199,9 +199,9 @@ const PulldownList = (props:PulldownListProps) => {
     return (
         <div className={`pulldown-list ${props.className}`} ref={pulldown}>
             <div className="pulldonw-list__container">
-                {PulldownRefresh()}
-                {PulldownContent}
-                {PulldownLoad()}
+                <PulldownRefresh />
+                <PulldownContent />
+                <PulldownLoad />
             </div>
         </div>
     )
