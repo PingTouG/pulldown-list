@@ -199,7 +199,7 @@ if (props.isLoad) {
 const pullupStatus = ref(props.loadStatus)
 const pullupDisabled = computed(() => pulldownStatus.value === "refreshing" || !props.isLoad || props.isEmpty)
 const pullupTip = computed(() => {
-const tips: { [prop:string]:string } = {
+  const tips: { [prop:string]:string } = {
     none: props.loadText,
     loading: props.loadingText,
     success: props.loadSuccessText,
@@ -272,7 +272,7 @@ defineComponent({
 })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .pulldown-list {
   overflow: hidden;
 }
