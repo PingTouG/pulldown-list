@@ -64,7 +64,7 @@ const PulldownList = (props:PulldownListProps) => {
     const [pullupDisabled,setPullupDisabled] = useState(false)
     const [pullupTip,setPullupTip] = useState('')
 
-    useMemo(() => {
+    useEffect(() => {
         const tips: { [prop:string]:string } = {
             none: props.loadText,
             loading: props.loadingText,
@@ -73,8 +73,7 @@ const PulldownList = (props:PulldownListProps) => {
             finished: props.loadFinishedText,
         };
         setPullupTip(tips[pullupStatus])
-        // setPullupDisabled(props.refreshStatus === "refreshing" || pullupStatus === "refreshing" || !props.isLoad || props.isEmpty)
-        setPullupDisabled(props.refreshStatus === "refreshing" || pullupStatus === "refreshing" || !props.isLoad)
+        setPullupDisabled(props.refreshStatus === "refreshing" || pullupStatus === "refreshing" || !props.isLoad || props.isEmpty)
     },[props.refreshStatus,pullupStatus,props.isLoad,props.isEmpty])
     // 首次加载
     useEffect(()=>{
