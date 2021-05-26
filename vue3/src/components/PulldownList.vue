@@ -184,7 +184,7 @@ watch(
 const onRefreshing = () => {
   if (pulldownDisabled.value) {
     bs.value.finishPullUp();
-  } else {
+  } else if (pulldownStatus.value !== 'refreshing') {
     pulldownStatus.value = "refreshing";
     emit("refresh");
   }

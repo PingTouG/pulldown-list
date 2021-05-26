@@ -82,7 +82,7 @@
   const onRefreshing = () => {
     if (pulldownDisabled) {
       bs.finishPullUp()
-    } else {
+    } else if (pulldownStatus !== 'refreshing') {
       pulldownStatus = 'refreshing'
       dispatch('refresh')
     }

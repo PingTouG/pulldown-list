@@ -46,7 +46,7 @@ const PulldownList = (props:PulldownListProps) => {
     const onRefreshing = () => {
         if (pulldownDisabled) {
           bs.finishPullUp()
-        } else {
+        } else if (pulldownStatus !== 'refreshing') {
             setPulldownStatus("refreshing")
             props.refresh && props.refresh("refresh")
         }

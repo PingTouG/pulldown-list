@@ -262,7 +262,7 @@ export default {
     onRefreshing() {
       if (this.pulldownDisabled) {
         this.bs.finishPullUp();
-      } else {
+      } else if (this.pulldownStatus !== 'refreshing'){
         this.pulldownStatus = "refreshing";
         this.$emit("refresh");
       }
