@@ -97,6 +97,8 @@ const PulldownList = (props:PulldownListProps) => {
         setPulldownStatus(props.refreshStatus)
         // 成功加载数据之后需要重新计算BetterScroll以确保滚动效果正常
         props.refreshStatus === 'success' && bs.refresh()
+        // 刷新状态触发刷新事件
+        props.refreshStatus === "refreshing" && bs.autoPullDownRefresh()
         // 如果刷新时已经加载全部的数据，则需要在触发刷新时将加载状态重置
         if(props.loadStatus === 'finished'){
             setPullupStatus('none')
